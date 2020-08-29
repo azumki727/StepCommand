@@ -1,0 +1,9 @@
+# StepCommand Configuration File
+# Version 1.0.0
+
+# Numeric ID of the block
+block-id: 1
+# Command executor [console / player]
+executor: "console"
+# Command that is executed
+command: "warp somewherenice"
