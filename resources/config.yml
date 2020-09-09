@@ -1,5 +1,5 @@
 # StepCommand Configuration File
-# Version 1.0.0
+# Version 1.0.1
 
 # Numeric ID of the block
 block-id: 1
@@ -7,3 +7,8 @@ block-id: 1
 executor: "console"
 # Command that is executed
 command: "warp somewherenice"
+
+# MutliWorld support [true / false]
+multiworld-enabled: false
+# World where the execution is enabled
+world: "world"
