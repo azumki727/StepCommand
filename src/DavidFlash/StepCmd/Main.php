@@ -53,7 +53,7 @@ class Main extends PluginBase implements Listener {
       }
     }else{
       $this->getConfig()->set("multiworld-enabled", false);
-      echo "§c[StepCommand] -> You must include at leats 2 worlds to enabled worlds!";
+      $this->getLogger()->info("§c[StepCommand] -> You must include at leats 2 worlds to enabled worlds!");
     }
   }else{
       if($block->getId() == $this->getConfig()->getNested("block-id")){
