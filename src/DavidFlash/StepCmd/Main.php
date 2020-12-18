@@ -37,10 +37,13 @@ class Main extends PluginBase implements Listener {
       $replaced = array($playername, $playerworld);
       $command = str_replace($toreplace, $replaced, $phrase);
 
-    if($this->getConfig()->getNested("multiworld-enabled")==true){
-      if($player->getLevel()->getName() === $this->getConfig()->getNested("world")){
+   if($this->getConfig()->getNested("multiworld-enabled") === true){
+    if(is_array($this->getConfig()->getNested("enabled-worlds"))){
+     if(in_array($player->getLevel()->getName(), $this->getConfig()->getNested("enabled-worlds"))){
       if($block->getId()==$this->getConfig()->getNested("block-id")){
-        if($player->hasPermission("stepcommand.bypass")){}
+        if($player->hasPermission("stepcommand.bypass")){
+          return true;
+        }
         else if($this->getConfig()->get("executor") === "console"){
           $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
         }else{
@@ -49,8 +52,14 @@ class Main extends PluginBase implements Listener {
         }
       }
     }else{
-      if($block->getId()==$this->getConfig()->getNested("block-id")){
-        if($player->hasPermission("stepcommand.bypass")){}
+      $this->getConfig()->set("multiworld-enabled", false);
+      echo "§c[StepCommand] -> You must include at leats 2 worlds to enabled worlds!";
+    }
+  }else{
+      if($block->getId() == $this->getConfig()->getNested("block-id")){
+        if($player->hasPermission("stepcommand.bypass")){
+          return true;
+        }
         else if($this->getConfig()->get("executor") === "console"){
           $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
         }else{

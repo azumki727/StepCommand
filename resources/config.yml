@@ -1,16 +1,18 @@
 # StepCommand Configuration File
-# Version 1.0.2
+# Version 1.0.3
 
 # Use {player} for player name and {world} for world the player is in
 
 # Numeric ID of the block
 block-id: 1
-# Command executor [console / player] use {player} for player name and {world} for world the player is in.
+# Command executor [console / player]
 executor: "console"
 # Command that is executed, use {player} for player name and {world} for world the player is in.
 command: "say {player} is nice"
 
 # MutliWorld support [true / false]
 multiworld-enabled: false
-# World where the execution is enabled
-world: "world"
+# Worlds where the execution is enabled (You must specify at least 2 worlds!)
+enabled-worlds:
+  - "example1"
+  - "example 2"
