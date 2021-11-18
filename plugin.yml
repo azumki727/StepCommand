@@ -1,7 +1,7 @@
 name: StepCommand
 main: DavidFlash\StepCmd\Main
 author: DavidFlash
-version: 1.0.3
+version: 1.0.4
 api: 3.14.0
 
 permissions:

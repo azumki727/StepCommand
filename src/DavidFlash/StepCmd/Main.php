@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace DavidFlash\StepCmd;
 
 use pocketmine\Player;
-use pocketmine\Server;
 use pocketmine\command\ConsoleCommandSender;
-use pocketmine\command\CommandSender;
-use pocketmine\command\Command;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\player\PlayerMoveEvent;
-use pocketmine\event\entity\EntityLevelChangeEvent;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\Block;
 use pocketmine\event\Listener;
-use pocketmine\level\Level;
 
 
 class Main extends PluginBase implements Listener {
@@ -27,45 +20,49 @@ class Main extends PluginBase implements Listener {
 		      }
     }
 
-    public function on_move(PlayerMoveEvent $event){
+    public function onPlayerMovement(PlayerMoveEvent $event){
         $player = $event->getPlayer();
-        $playername = $player->getName();
-        $playerworld = $player->getLevel()->getName();
-        $block = $player->getLevel()->getBlock($player->subtract(0, 1, 0));
-      $phrase  = $this->getConfig()->getNested("command");
-      $toreplace = array("{player}", "{world}");
-      $replaced = array($playername, $playerworld);
-      $command = str_replace($toreplace, $replaced, $phrase);
+        $playerName = $player->getName();
+        $currentLevelName = $player->getLevel()->getName();
+        $currentBlock = $player->getLevel()->getBlock($player->subtract(0, 1, 0));
+        $toReplace = array("{player}", "{world}");
+        $replaceWith = array($playerName, $currentLevelName);
+        $config = $this->getConfig()->get("commands");
 
-   if($this->getConfig()->getNested("multiworld-enabled") === true){
-    if(is_array($this->getConfig()->getNested("enabled-worlds"))){
-     if(in_array($player->getLevel()->getName(), $this->getConfig()->getNested("enabled-worlds"))){
-      if($block->getId()==$this->getConfig()->getNested("block-id")){
-        if($player->hasPermission("stepcommand.bypass")){
-          return true;
-        }
-        else if($this->getConfig()->get("executor") === "console"){
-          $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
+        if(!in_array($currentBlock->getId(), $this->getConfig()->get("blocks"))) return;
+        if($player->hasPermission("stepcommand.bypass")) return;
+
+        if($this->getConfig()->get("multiworld-enabled")){
+          if(is_array($this->getConfig()->get("enabled-worlds"))){
+            if(in_array($player->getLevel()->getName(), $this->getConfig()->get("enabled-worlds"))){
+              if($this->getConfig()->get("executor") === "console"){
+                foreach($config as $commands){
+                  $command = str_replace($toReplace, $replaceWith, $commands);
+                  $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
+                }
+              }else{
+                foreach($config as $commands){
+                  $command = str_replace($toReplace, $replaceWith, $commands);
+                  $this->getServer()->dispatchCommand($player, $command);
+                }
+              }
+            }else{
+              $this->getConfig()->set("multiworld-enabled", false);
+              $this->getLogger()->warning("§c[StepCommand] -> The config must be in the correct format! Please check enabled-worlds in configuration file.");
+            }
+          }
         }else{
-          $this->getServer()->dispatchCommand($player, $command);
+          if($this->getConfig()->get("executor") === "console"){
+            foreach($config as $commands){
+              $command = str_replace($toReplace, $replaceWith, $commands);
+              $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
+            }
+          }else{
+            foreach($config as $commands){
+              $command = str_replace($toReplace, $replaceWith, $commands);
+              $this->getServer()->dispatchCommand($player, $command);
+            }
           }
         }
-      }
-    }else{
-      $this->getConfig()->set("multiworld-enabled", false);
-      $this->getLogger()->info("§c[StepCommand] -> You must include at leats 2 worlds to enabled worlds!");
-    }
-  }else{
-      if($block->getId() == $this->getConfig()->getNested("block-id")){
-        if($player->hasPermission("stepcommand.bypass")){
-          return true;
-        }
-        else if($this->getConfig()->get("executor") === "console"){
-          $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
-        }else{
-          $this->getServer()->dispatchCommand($player, $command);
-          }
-        }
-      }
     }
 }

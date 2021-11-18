@@ -1,18 +1,26 @@
 # StepCommand Configuration File
-# Version 1.0.3
+# Version 1.0.4 - Revamp
 
 # Use {player} for player name and {world} for world the player is in
 
 # Numeric ID of the block
-block-id: 1
+blocks: 
+  - 1
+  - 2
 # Command executor [console / player]
 executor: "console"
-# Command that is executed, use {player} for player name and {world} for world the player is in.
-command: "say {player} is nice"
+# Commands that is executed, use {player} for player name and {world} for world the player is in.
+commands: 
+  - msg {player} Hello! This is StepCommand. Please set up this plugin in the configuration file located in plugin_data/StepCommand or plugins/StepCommand
 
 # MutliWorld support [true / false]
 multiworld-enabled: false
-# Worlds where the execution is enabled (You must specify at least 2 worlds!)
+
+# Worlds where the execution is enabled, make sure the list is in the following format
+  # enabled-worlds:
+  # - "example1"
+  # - "example 2"
+
 enabled-worlds:
-  - "example1"
-  - "example 2"
+  - world
+  - example 2
