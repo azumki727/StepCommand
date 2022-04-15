@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace DavidFlash\StepCmd;
 
 use pocketmine\Player;
-use pocketmine\command\ConsoleCommandSender;
+use pocketmine\console\ConsoleCommandSender;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\Listener;
+use pocketmine\world\World;
+use pocketmine\world\Position;
+use pocketmine\lang\Language;
 
 
 class Main extends PluginBase implements Listener {
 
-    public function onEnable() {
+    protected function onEnable() : void {
           $this->getServer()->getPluginManager()->registerEvents($this, $this);
           if(!is_file($this->getDataFolder() . "config.yml")){
 			        $this->saveResource('/config.yml');
@@ -23,8 +26,8 @@ class Main extends PluginBase implements Listener {
     public function onPlayerMovement(PlayerMoveEvent $event){
         $player = $event->getPlayer();
         $playerName = $player->getName();
-        $currentLevelName = $player->getLevel()->getName();
-        $currentBlock = $player->getLevel()->getBlock($player->subtract(0, 1, 0));
+        $currentLevelName = $player->getWorld()->getProvider()->getWorldData()->getName();
+        $currentBlock = $player->getWorld()->getBlock($player->getPosition()->subtract(0, 1, 0));
         $toReplace = array("{player}", "{world}");
         $replaceWith = array($playerName, $currentLevelName);
         $config = $this->getConfig()->get("commands");
@@ -34,11 +37,11 @@ class Main extends PluginBase implements Listener {
 
         if($this->getConfig()->get("multiworld-enabled")){
           if(is_array($this->getConfig()->get("enabled-worlds"))){
-            if(in_array($player->getLevel()->getName(), $this->getConfig()->get("enabled-worlds"))){
+            if(in_array($currentLevelName, $this->getConfig()->get("enabled-worlds"))){
               if($this->getConfig()->get("executor") === "console"){
                 foreach($config as $commands){
                   $command = str_replace($toReplace, $replaceWith, $commands);
-                  $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
+                  $this->getServer()->dispatchCommand(new ConsoleCommandSender($this->getServer(), new Language("eng")), $command);
                 }
               }else{
                 foreach($config as $commands){
@@ -55,7 +58,7 @@ class Main extends PluginBase implements Listener {
           if($this->getConfig()->get("executor") === "console"){
             foreach($config as $commands){
               $command = str_replace($toReplace, $replaceWith, $commands);
-              $this->getServer()->dispatchCommand(new ConsoleCommandSender, $command);
+              $this->getServer()->dispatchCommand(new ConsoleCommandSender($this->getServer(), new Language("eng")), $command);
             }
           }else{
             foreach($config as $commands){
